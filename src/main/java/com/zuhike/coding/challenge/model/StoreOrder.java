@@ -10,7 +10,6 @@ import java.time.LocalDate;
  *
  */
 @Data
-@ToString
 @Builder
 public class StoreOrder implements Serializable {
 

@@ -13,7 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString
 public class StoreOrderDTO implements Serializable {
 
     private String rowID;

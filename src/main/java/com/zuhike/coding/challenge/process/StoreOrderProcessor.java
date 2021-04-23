@@ -4,24 +4,34 @@ import com.zuhike.coding.challenge.model.StoreOrder;
 import com.zuhike.coding.challenge.model.StoreOrderDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static com.zuhike.coding.challenge.common.Constants.dateTimeFormatter;
+
 @Slf4j
+@Component
 public class StoreOrderProcessor implements ItemProcessor<StoreOrderDTO, StoreOrder> {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.mm.yy");
+    @Autowired
+    OrderValidator orderValidator;
 
     @Override
-    public StoreOrder process(StoreOrderDTO storeOrder) throws Exception {
+    public StoreOrder process(final StoreOrderDTO storeOrder) throws Exception {
         //Validate the record for Validity
-        log.debug("Processing storeOrder ", storeOrder);
+        log.info("========== Started Processing StoreOrder {} =========== ", storeOrder);
+
+        if (!orderValidator.validate(storeOrder)) {
+            return null;
+        }
 
         return StoreOrder.builder().orderID(storeOrder.getOrderID())
-                .orderDate(LocalDate.parse(storeOrder.getOrderDate(), formatter))
-                .shipDate(LocalDate.parse(storeOrder.getShipDate(), formatter))
+                .orderDate(LocalDate.parse(storeOrder.getOrderDate(), dateTimeFormatter))
+                .shipDate(LocalDate.parse(storeOrder.getShipDate(), dateTimeFormatter))
                 .shipmentMode(storeOrder.getShipmentMode())
                 .customerID(storeOrder.getCustomerID()).customerName(storeOrder.getCustomerName())
                 .productID(storeOrder.getProductID()).category(storeOrder.getCategory())
